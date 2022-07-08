@@ -98,6 +98,7 @@ module RailsVersionScope
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails db:migrate RAILS_ENV=test", PLUGIN_ROOT],
         ["cp tests/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
         ["cp tests/fixtures/blue.png #{PLUGIN_NAME}/test/fixtures/", APP_ROOT],
+        ["./bin/dummy_setup add_asset_associated_to_attachment", APP_ROOT],
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails test", PLUGIN_ROOT],
       ]
     end
