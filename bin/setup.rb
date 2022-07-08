@@ -100,21 +100,21 @@ module RailsVersionScope
     end
 
     def create_rails_plugin
-      "rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable" \
-        "--database=sqlite3" \
-        "--skip-yarn" \
-        "--skip-action-mailer" \
-        "--skip-puma" \
-        "--skip-action-cable" \
-        "--skip-sprockets" \
-        "--skip-spring" \
-        "--skip-listen" \
-        "--skip-coffee" \
-        "--skip-javascript" \
-        "--skip-turbolinks" \
-        "--skip-system-test" \
-        "--skip-bootsnap" \
-        "--no-rc" \
+      "rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable  " \
+        "--database=sqlite3 " \
+        "--skip-yarn " \
+        "--skip-action-mailer " \
+        "--skip-puma " \
+        "--skip-action-cable " \
+        "--skip-sprockets " \
+        "--skip-spring " \
+        "--skip-listen " \
+        "--skip-coffee " \
+        "--skip-javascript " \
+        "--skip-turbolinks " \
+        "--skip-system-test " \
+        "--skip-bootsnap " \
+        "--no-rc " \
         "--dummy-path=test/dummy"
     end
 
