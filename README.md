@@ -1,19 +1,13 @@
-cp tests/attachment_test.rb ActiveStorageOverTime/test/
+# Add Rails Version
 
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails generate model attachment
+asdf local ruby 2.7.6
 
-bin/rails db:migrate
+set GEMFILE_FILE_PATH gemfiles/Gemfile.6.1.6.gemfile
 
-bin/rails app:active_storage:install
+bundle install --gemfile="$GEMFILE_FILE_PATH" --retry 1
 
-bin/rails db:migrate
+bundle lock --add-platform x86_64-linux --gemfile $GEMFILE_FILE_PATH
 
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails app:railties:install:migrations
+./bin/setup --rails-version=6.1.6
 
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec bin/setup
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails app:active_storage:update
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails db:migrate RAILS_ENV=test
-BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails test
-
-
-
+cd ActiveStorageOverTime && BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails test
