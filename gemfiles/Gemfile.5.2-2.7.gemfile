@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+# Runtime dependencies
+gem 'rails', '= 5.2.8'
+
+group :development, :test do
+  platform :mri do
+    gem 'sqlite3'
+  end
+end
