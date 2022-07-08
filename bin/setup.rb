@@ -78,7 +78,6 @@ module RailsVersionScope
 
     def call
       commands.each do |command|
-              binding.irb
         run(command)
       end
     end
