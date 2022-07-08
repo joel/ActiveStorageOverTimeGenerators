@@ -79,9 +79,9 @@ module RailsVersionScope
     end
 
     def call
-      commands.each do |command|
-        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}")
-        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}")
+      commands.each do |command, root_directory|
+        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}", root_directory)
+        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}", root_directory)
       end
     end
 
@@ -96,9 +96,9 @@ module RailsVersionScope
       ]
     end
 
-    def run(*args)
-      FileUtils.chdir APP_ROOT do
-        terminal.run(*args, only_output_on_error: true)
+    def run(cmd, root_directory)
+      FileUtils.chdir root_directory do
+        terminal.run(cmd, only_output_on_error: true)
       end
     end
 
