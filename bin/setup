@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "tty-command"
+  gem "tty-option"
+end
+
+module RailsVersionScope
+
+  class Cli
+
+    def initialize
+      command = Command.new
+      command.parse
+      @options = command.run
+    end
+
+    def run
+      Program.new(options).update!
+    end
+
+    private
+
+    attr_reader :options
+  end
+
+  class Command
+    include TTY::Option
+
+    usage do
+      program "RailsVersionScope"
+
+      command "run"
+
+      desc "Prepare and run under specific Rails version"
+
+      example "setup --rails-version=5.2.6"
+    end
+
+    flag :verbose do
+      short "-v"
+      long "--verbose"
+      desc "Turn on output"
+    end
+
+    flag :help do
+      short "-h"
+      long "--help"
+      desc "Print usage"
+    end
+
+    option :rails_version do
+      required
+      long "--rails-version string"
+      desc "The version of Rails to use"
+    end
+
+    def run
+      return params.to_h unless params[:help]
+
+      print help
+      exit
+    end
+
+  end
+
+  class Program
+
+    APP_ROOT = File.expand_path("..", __dir__)
+
+    def initialize(options)
+      printer = options[:verbose] ? :pretty : :null
+      @terminal = TTY::Command.new(printer: printer)
+    end
+
+    def run
+      commands.each do |command|
+        run(command)
+      end
+    end
+
+    private
+
+    attr_reader :terminal
+
+    def commands
+      [
+        create_rails_plugin
+      ]
+    end
+
+    def run(*args)
+      FileUtils.chdir APP_ROOT do
+        terminal.run(*args, only_output_on_error: true)
+      end
+    end
+
+    def create_rails_plugin
+      "rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable" \
+        "--database=sqlite3" \
+        "--skip-yarn" \
+        "--skip-action-mailer" \
+        "--skip-puma" \
+        "--skip-action-cable" \
+        "--skip-sprockets" \
+        "--skip-spring" \
+        "--skip-listen" \
+        "--skip-coffee" \
+        "--skip-javascript" \
+        "--skip-turbolinks" \
+        "--skip-system-test" \
+        "--skip-bootsnap" \
+        "--no-rc" \
+        "--dummy-path=test/dummy"
+    end
+
+  end
+
+end
+
+RailsVersionScope::Cli.new.run
