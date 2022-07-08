@@ -78,7 +78,7 @@ module RailsVersionScope
 
     def call
       commands.each do |command|
-        run("BUNDLE_GEMFILE=gemfiles/Gemfile.5.2-2.7.gemfile bundle exec #{command}")
+        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}")
       end
     end
 
