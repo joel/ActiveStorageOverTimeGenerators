@@ -69,7 +69,9 @@ module RailsVersionScope
 
   class Program
 
-    APP_ROOT = File.expand_path("..", __dir__)
+    APP_ROOT    = File.expand_path("..", __dir__)
+    PLUGIN_NAME = "ActiveStorageOverTime"
+    PLUGIN_ROOT = File.expand_path("../#{PLUGIN_NAME}", __dir__)
 
     def initialize(options)
       @options = options
@@ -78,6 +80,7 @@ module RailsVersionScope
 
     def call
       commands.each do |command|
+        run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}")
         run("BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec #{command}")
       end
     end
@@ -88,7 +91,8 @@ module RailsVersionScope
 
     def commands
       [
-        create_rails_plugin
+        [create_rails_plugin, APP_ROOT],
+        ["rails generate model attachment", PLUGIN_ROOT],
       ]
     end
 
