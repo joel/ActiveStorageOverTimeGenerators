@@ -35,6 +35,9 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
       -
+        name: Bundle install ${{ matrix.gemfile }}
+        run: BUNDLE_GEMFILE=gemfiles/Gemfile.${{ matrix.rails_version }}.gemfile bundle install
+      -
         name: Setup Tests For Rails ${{ matrix.rails_version }}
         run: ./bin/setup --rails-version=${{ matrix.rails_version }}
       -
