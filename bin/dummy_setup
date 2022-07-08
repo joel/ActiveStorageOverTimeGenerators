@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require "thor"
+
+class DummySetup < Thor
+  include Thor::Actions
+
+  PLUGIN_NAME = "ActiveStorageOverTime"
+  PLUGIN_NAMESPACE = "active_storage_over_time"
+
+  # bin/dummy_setup add_asset_associated_to_attachment
+  desc "add_asset_associated_to_attachment", "Add asset associated to attachment"
+  def add_asset_associated_to_attachment
+    inject_into_file "#{PLUGIN_NAME}/app/models/#{PLUGIN_NAMESPACE}/attachment.rb", "\n    has_one_attached :asset", after: /class Attachment < ApplicationRecord/
+  end
+
+end
+
+DummySetup.start(ARGV)
