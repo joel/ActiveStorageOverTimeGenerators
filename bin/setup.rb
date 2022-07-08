@@ -90,16 +90,17 @@ module RailsVersionScope
 
     def commands
       [
+        ["rm -rf #{PLUGIN_NAME}", APP_ROOT],
         [create_rails_plugin, APP_ROOT],
         ["cp .ruby-version #{PLUGIN_ROOT}", APP_ROOT],
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails generate model attachment", PLUGIN_ROOT],
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails app:active_storage:install", PLUGIN_ROOT],
         # ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails app:railties:install:migrations", PLUGIN_ROOT],
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails db:migrate RAILS_ENV=test", PLUGIN_ROOT],
-        ["cp tests/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
+        ["cp tests/#{options[:rails_version]}/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
         ["cp tests/fixtures/blue.png #{PLUGIN_NAME}/test/fixtures/", APP_ROOT],
         ["./bin/dummy_setup add_asset_associated_to_attachment", APP_ROOT],
-        # ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails test", PLUGIN_ROOT],
+        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails test", PLUGIN_ROOT],
       ]
     end
 
