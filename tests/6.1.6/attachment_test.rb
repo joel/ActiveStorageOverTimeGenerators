@@ -13,7 +13,7 @@ module ActiveStorageOverTime
       )
 
       assert_match(
-        %r{/rails/active_storage/blobs/redirect/(\w+)--(\w+)/(\w+)\.(\w+)\Z},
+        %r{/rails/active_storage/blobs/redirect/(.+)--(\w+)/(\w+)\.(\w+)\Z},
         polymorphic_path(attachment.asset, only_path: true),
         "Active Storage URL not recognized"
       )
