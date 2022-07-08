@@ -19,7 +19,7 @@ module RailsVersionScope
     end
 
     def run
-      Program.new(options).update!
+      Program.new(options).call
     end
 
     private
@@ -72,11 +72,11 @@ module RailsVersionScope
     APP_ROOT = File.expand_path("..", __dir__)
 
     def initialize(options)
-      printer = options[:verbose] ? :pretty : :null
-      @terminal = TTY::Command.new(printer: printer)
+      @options = options
+      @terminal = TTY::Command.new(printer: :pretty)
     end
 
-    def run
+    def call
       commands.each do |command|
         run(command)
       end
@@ -84,7 +84,7 @@ module RailsVersionScope
 
     private
 
-    attr_reader :terminal
+    attr_reader :terminal, :options
 
     def commands
       [
