@@ -21,6 +21,11 @@ jobs:
             ruby: 2.7.6
             gemfile: gemfiles/Gemfile.6.1.6.gemfile
             rails_version: 6.1.6
+          -
+            name: Rails 7.x
+            ruby: 2.7.6
+            gemfile: gemfiles/Gemfile.7.0.3.gemfile
+            rails_version: 7.0.3
 
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
