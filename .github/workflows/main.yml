@@ -5,7 +5,7 @@ on: [ push ]
 jobs:
   ci:
 
-    name: Run ${{ matrix.name }}
+    name: Test ${{ matrix.name }}
 
     runs-on: ubuntu-latest
 
