@@ -10,6 +10,6 @@ bundle install --gemfile="$GEMFILE_FILE_PATH" --retry 1
 
 bundle lock --add-platform x86_64-linux --gemfile $GEMFILE_FILE_PATH
 
-./bin/setup --rails-version=6.1.6
+./bin/setup --rails-version=$RUBY_VERSION
 
 cd ActiveStorageOverTime && BUNDLE_GEMFILE=$GEMFILE_FILE_PATH bundle exec rails test
