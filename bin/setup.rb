@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
 
-require "bundler/inline"
+require "tty-command"
+require "tty-option"
 
-gemfile do
-  source "https://rubygems.org"
-  gem "tty-command"
-  gem "tty-option"
-end
+require "bundler/setup"
+require "rails"
+
 
 module RailsVersionScope
 
@@ -37,25 +36,13 @@ module RailsVersionScope
 
       desc "Prepare and run under specific Rails version"
 
-      example "setup --rails-version=5.2.6"
-    end
-
-    flag :verbose do
-      short "-v"
-      long "--verbose"
-      desc "Turn on output"
+      example "bin/setup"
     end
 
     flag :help do
       short "-h"
       long "--help"
       desc "Print usage"
-    end
-
-    option :rails_version do
-      required
-      long "--rails-version string"
-      desc "The version of Rails to use"
     end
 
     def run
@@ -93,14 +80,14 @@ module RailsVersionScope
         ["rm -rf #{PLUGIN_NAME}", APP_ROOT],
         [create_rails_plugin, APP_ROOT],
         ["cp .ruby-version #{PLUGIN_ROOT}", APP_ROOT],
-        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails generate model attachment", PLUGIN_ROOT],
-        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails app:active_storage:install", PLUGIN_ROOT],
-        # ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails app:railties:install:migrations", PLUGIN_ROOT],
-        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails db:migrate RAILS_ENV=test", PLUGIN_ROOT],
-        ["cp tests/#{options[:rails_version]}/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
+        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails generate model attachment", PLUGIN_ROOT],
+        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails app:active_storage:install", PLUGIN_ROOT],
+        # ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails app:railties:install:migrations", PLUGIN_ROOT],
+        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails db:migrate RAILS_ENV=test", PLUGIN_ROOT],
+        ["cp tests/#{Rails::VERSION::STRING}/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
         ["cp tests/fixtures/blue.png #{PLUGIN_NAME}/test/fixtures/", APP_ROOT],
         ["./bin/dummy_setup add_asset_associated_to_attachment", APP_ROOT],
-        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails test", PLUGIN_ROOT],
+        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails test", PLUGIN_ROOT],
       ]
     end
 
@@ -129,10 +116,10 @@ module RailsVersionScope
         "--no-rc",
       ]
 
-      options = (base_options + extra_plugin_configuration).flatten.join(" ")
+      cmd_options = (base_options + extra_plugin_configuration).flatten.join(" ")
 
-      "BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec "\
-        "rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable #{options} --dummy-path=test/dummy"
+      "BUNDLE_GEMFILE=gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec "\
+        "rails _#{Rails::VERSION::STRING}_ plugin new ActiveStorageOverTime --mountable #{cmd_options} --dummy-path=test/dummy"
     end
 
     def extra_plugin_configuration
@@ -147,14 +134,14 @@ module RailsVersionScope
           "--skip-action-mailbox",
           "--skip-action-text",
           "--skip-active-job",
-          "--skip-jbuilder",
+          "--skip-jbuilder"
         ]
       end
 
       if Rails::VERSION::MAJOR == 7
         extra << [
           "--skip-asset-pipeline",
-          "--skip-hotwire",
+          "--skip-hotwire"
         ]
       end
 
