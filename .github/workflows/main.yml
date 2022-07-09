@@ -40,6 +40,11 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
       -
+        name: Bundle install extra gems
+        run: |
+          gem install tty-command
+          gem install tty-option
+      -
         name: Bundle install ${{ matrix.gemfile }}
         run: BUNDLE_GEMFILE=gemfiles/Gemfile.${{ matrix.rails_version }}.gemfile bundle install
       -
