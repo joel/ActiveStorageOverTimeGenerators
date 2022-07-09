@@ -111,22 +111,54 @@ module RailsVersionScope
     end
 
     def create_rails_plugin
-      "BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable  " \
-        "--database=sqlite3 " \
-        "--skip-yarn " \
-        "--skip-action-mailer " \
-        "--skip-puma " \
-        "--skip-action-cable " \
-        "--skip-sprockets " \
-        "--skip-spring " \
-        "--skip-listen " \
-        "--skip-coffee " \
-        "--skip-javascript " \
-        "--skip-turbolinks " \
-        "--skip-system-test " \
-        "--skip-bootsnap " \
-        "--no-rc " \
-        "--dummy-path=test/dummy"
+      base_options = [
+        "--database=sqlite3",
+        "--skip-yarn",
+        "--skip-action-mailer",
+        "--skip-puma",
+        "--skip-action-cable",
+        "--skip-sprockets",
+        "--skip-spring",
+        "--skip-listen",
+        "--skip-coffee",
+        "--skip-javascript",
+        "--skip-turbolinks",
+        "--skip-test" \
+        "--skip-system-test",
+        "--skip-bootsnap",
+        "--no-rc",
+      ]
+
+      options = (base_options + extra_plugin_configuration).flatten.join(" ")
+
+      "BUNDLE_GEMFILE=gemfiles/Gemfile.#{options[:rails_version]}.gemfile bundle exec "\
+        "rails _#{options[:rails_version]}_ plugin new ActiveStorageOverTime --mountable #{options} --dummy-path=test/dummy"
+    end
+
+    def extra_plugin_configuration
+      extra = []
+
+      if Rails::VERSION::MAJOR == 6
+        extra << [
+          "--skip-collision-check",
+          "--skip-git",
+          "--skip-keeps",
+          "--skip-active-job",
+          "--skip-action-mailbox",
+          "--skip-action-text",
+          "--skip-active-job",
+          "--skip-jbuilder",
+        ]
+      end
+
+      if Rails::VERSION::MAJOR == 7
+        extra << [
+          "--skip-asset-pipeline",
+          "--skip-hotwire",
+        ]
+      end
+
+      extra.flatten
     end
 
   end
