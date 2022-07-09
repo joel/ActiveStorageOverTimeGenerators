@@ -2,7 +2,9 @@
 
 asdf local ruby 2.7.6
 
-set GEMFILE_FILE_PATH gemfiles/Gemfile.6.1.6.gemfile
+set RUBY_VERSION 7.0.3
+set GEMFILE_FILE_PATH gemfiles/Gemfile.$RUBY_VERSION.gemfile
+echo $GEMFILE_FILE_PATH
 
 bundle install --gemfile="$GEMFILE_FILE_PATH" --retry 1
 
