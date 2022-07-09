@@ -5,6 +5,8 @@ on: [ push ]
 jobs:
   ci:
 
+    name: Run ${{ matrix.name }}
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -14,8 +16,8 @@ jobs:
           -
             name: Rails 5.x
             ruby: 2.7.6
-            gemfile: gemfiles/Gemfile.5.2.6.gemfile
-            rails_version: 5.2.6
+            gemfile: gemfiles/Gemfile.5.2.8.gemfile
+            rails_version: 5.2.8
           -
             name: Rails 6.x
             ruby: 2.7.6
