@@ -12,13 +12,24 @@ module ActiveStorageOverTime
         Rails.root.join("../../test/fixtures/blue.png")
       )
 
+      assert Attachment.new.valid?
+
+      assert_changes -> { Dir[Rails.root.join("tmp/storage/**/*")].count(&File.method(:file?)) }, +1 do
+        assert_nothing_raised { attachment.save! }
+      end
+
+      regex = %r{/rails/active_storage/blobs/redirect/(?<message>.+--\w+)/(\w+)\.(\w+)\Z}
+      path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
+
       assert_match(
-        %r{/rails/active_storage/blobs/redirect/(.+)--(\w+)/(\w+)\.(\w+)\Z},
-        polymorphic_path(attachment.asset, only_path: true),
+        regex,
+        path_for_attachment,
         "Active Storage URL not recognized"
       )
 
-      assert Attachment.new.valid?
+      message = path_for_attachment.match(regex)[:message]
+
+      assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(message, purpose: "blob_id"))
     end
   end
 end
