@@ -40,5 +40,28 @@ jobs:
 
     steps:
       -
-        name: Test Envs
-        run: echo ${{ env.BUNDLE_GEMFILE }}
+        name: Checkout Source Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '1'
+      -
+        name: Install ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      -
+        name: Bundle install extra gems
+        run: |
+          gem install tty-command
+          gem install tty-option
+      -
+        name: Bundle install ${{ matrix.gemfile }}
+        run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} bundle install
+      -
+        name: Setup Tests For Rails ${{ matrix.rails_version }}
+        run: SECRET_KEY_BASE=${{ env.SECRET_KEY_BASE }} BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} ./bin/setup
+      -
+        name: Test Active Storage ${{ matrix.rails_version }}
+        run: |
+          cd ActiveStorageOverTime
+          SECRET_KEY_BASE=${{ env.SECRET_KEY_BASE }} BUNDLE_GEMFILE=../${{ env.BUNDLE_GEMFILE }} bundle exec rails test
