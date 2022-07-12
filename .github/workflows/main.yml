@@ -2,6 +2,12 @@ name: Tests
 
 on: [ push ]
 
+env:
+  BUNDLE_WITHOUT: production
+  BUNDLE_JOBS: 3
+  BUNDLE_RETRY: 3
+  SECRET_KEY_BASE: abcd1234
+
 jobs:
   ci:
 
@@ -31,32 +37,8 @@ jobs:
 
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
-      BUNDLE_WITHOUT: production
-      BUNDLE_JOBS: 3
-      BUNDLE_RETRY: 3
 
     steps:
       -
-        name: Checkout Source Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: '1'
-      -
-        name: Install ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-      -
-        name: Bundle install extra gems
-        run: |
-          gem install tty-command
-          gem install tty-option
-      -
-        name: Bundle install ${{ matrix.gemfile }}
-        run: BUNDLE_GEMFILE=gemfiles/Gemfile.${{ matrix.rails_version }}.gemfile bundle install
-      -
-        name: Setup Tests For Rails ${{ matrix.rails_version }}
-        run: ./bin/setup --rails-version=${{ matrix.rails_version }}
-      -
-        name: Test Active Storage ${{ matrix.rails_version }}
-        run: cd ActiveStorageOverTime && BUNDLE_GEMFILE=../gemfiles/Gemfile.${{ matrix.rails_version }}.gemfile bundle exec rails test
+        name: Test Envs
+        run: echo ${{ jobs.ci.env.BUNDLE_GEMFILE }}
