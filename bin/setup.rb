@@ -87,7 +87,7 @@ module RailsVersionScope
         ["cp tests/#{Rails::VERSION::STRING}/attachment_test.rb #{PLUGIN_NAME}/test/", APP_ROOT],
         ["cp tests/fixtures/blue.png #{PLUGIN_NAME}/test/fixtures/", APP_ROOT],
         ["./bin/dummy_setup add_asset_associated_to_attachment", APP_ROOT],
-        ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails test", PLUGIN_ROOT],
+        ["SECRET_KEY_BASE=abcd1234 BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails test", PLUGIN_ROOT],
       ]
     end
 
