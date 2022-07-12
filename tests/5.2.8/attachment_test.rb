@@ -30,6 +30,11 @@ module ActiveStorageOverTime
       message = path_for_attachment.match(regex)[:message]
 
       assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(message, purpose: "blob_id"))
+
+      assert_equal(
+        "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2f5c0f536abc3a6edbfb947904955b8ee2bda7b6",
+        message
+      )
     end
   end
 end
