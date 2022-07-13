@@ -69,6 +69,11 @@ module ActiveStorageOverTime
 
       token = verifier.generate("foo bar")
 
+      assert_equal(
+        token,
+        "BAhJIgxmb28gYmFyBjoGRVQ=--c96da3d84a4293a81f3a30c71afe1492ec82e9d6"
+      )
+
       assert_equal("foo bar", verifier.verify(token))
     end
 
