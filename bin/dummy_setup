@@ -14,9 +14,14 @@ class DummySetup < Thor
     inject_into_file "#{PLUGIN_NAME}/app/models/#{PLUGIN_NAMESPACE}/attachment.rb", "\n    has_one_attached :asset", after: /class Attachment < ApplicationRecord/
   end
 
-  desc "overide_signed_id_verifier_secret", "Overide signed_id_verifier_secret"
-  def overide_signed_id_verifier_secret
-    inject_into_file "#{PLUGIN_NAME}/lib/#{PLUGIN_NAMESPACE}/engine.rb", "\n    config.signed_id_verifier_secret=\"foo\"", after: /isolate_namespace ActiveStorageOverTime/
+  # desc "overide_signed_id_verifier_secret", "Overide signed_id_verifier_secret"
+  # def overide_signed_id_verifier_secret
+  #   inject_into_file "#{PLUGIN_NAME}/lib/#{PLUGIN_NAMESPACE}/engine.rb", "\n    config.signed_id_verifier_secret=\"foo\"", after: /isolate_namespace ActiveStorageOverTime/
+  # end
+
+  desc "set_secret_key_base", "Set secret_key_base"
+  def set_secret_key_base
+    inject_into_file "#{PLUGIN_NAME}/lib/#{PLUGIN_NAMESPACE}/config/application.rb", "\n\n    config.secret_key_base = \"your-secret\"", after: /# the framework and any gems in your application./
   end
 
 end
