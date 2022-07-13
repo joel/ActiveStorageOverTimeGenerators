@@ -35,6 +35,9 @@ module ActiveStorageOverTime
         attachment.id,
         ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
       )
+
+      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
+      assert_equal(signature, ref_signature)
     end
   end
 end
