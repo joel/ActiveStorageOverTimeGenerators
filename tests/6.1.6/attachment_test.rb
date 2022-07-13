@@ -18,7 +18,7 @@ module ActiveStorageOverTime
         assert_nothing_raised { attachment.save! }
       end
 
-      regex = %r{/rails/active_storage/blobs/redirect/(?<message>.+--\w+)/(\w+)\.(\w+)\Z}
+      regex = %r{/rails/active_storage/blobs/redirect/(?<signature>.+--\w+)/(\w+)\.(\w+)\Z}
       path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
 
       assert_match(
@@ -27,15 +27,25 @@ module ActiveStorageOverTime
         "Active Storage URL not recognized"
       )
 
-      message = path_for_attachment.match(regex)[:message]
+      signature = path_for_attachment.match(regex)[:signature]
 
-      assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(message, purpose: "blob_id"))
+      assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
+
+      assert_equal(
+        attachment.id,
+        ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
+      )
     end
 
     test "Rails 5.x compatibility" do
       # Rails 5.x keys the blob_id in the URL
-      message = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6c13b469ea9800834de3cef4976b4ef57c9d7211"
-      assert_equal(1, ActiveStorage.verifier.verify(message, purpose: "blob_id"))
+      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6c13b469ea9800834de3cef4976b4ef57c9d7211"
+      # assert_equal(1, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
+
+      assert_equal(
+        1,
+        ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
+      )
     end
 
   end
