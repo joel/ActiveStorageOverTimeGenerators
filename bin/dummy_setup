@@ -21,7 +21,8 @@ class DummySetup < Thor
 
   desc "set_secret_key_base", "Set secret_key_base"
   def set_secret_key_base
-    inject_into_file "#{PLUGIN_NAME}/lib/#{PLUGIN_NAMESPACE}/config/application.rb", "\n\n    config.secret_key_base = \"your-secret\"", after: /# the framework and any gems in your application./
+    inject_into_file "#{PLUGIN_NAME}/test/dummy/config/application.rb", "\n\n    config.secret_key_base = \"your-secret\"", after: /# the framework and any gems in your application.|Rails\.root\.join\("extras"\)/
+    # inject_into_file "#{PLUGIN_NAME}/test/dummy/config/application.rb", "\n\n    config.secret_key_base = \"your-secret\"", after: /Rails\.root\.join\("extras"\)/
   end
 
 end
