@@ -6,7 +6,6 @@ env:
   BUNDLE_WITHOUT: production
   BUNDLE_JOBS: 3
   BUNDLE_RETRY: 3
-  SECRET_KEY_BASE: abcd1234
 
 jobs:
   ci:
@@ -59,9 +58,9 @@ jobs:
         run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} bundle install
       -
         name: Setup Tests For Rails ${{ matrix.rails_version }}
-        run: SECRET_KEY_BASE=${{ env.SECRET_KEY_BASE }} BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} ./bin/setup
+        run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} ./bin/setup
       -
         name: Test Active Storage ${{ matrix.rails_version }}
         run: |
           cd ActiveStorageOverTime
-          SECRET_KEY_BASE=${{ env.SECRET_KEY_BASE }} BUNDLE_GEMFILE=../${{ env.BUNDLE_GEMFILE }} bundle exec rails test
+          BUNDLE_GEMFILE=../${{ env.BUNDLE_GEMFILE }} bundle exec rails test
