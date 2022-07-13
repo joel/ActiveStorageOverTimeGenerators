@@ -29,7 +29,7 @@ module ActiveStorageOverTime
 
       # That route changes in Rails 6.x
       # get "/rails/active_storage/blobs/:signed_id/*filename" => "active_storage/blobs#show", as: :rails_service_blob
-      regex = %r{/rails/active_storage/blobs/(?<signature>\w+--\w+)/(\w+)\.(\w+)\Z}
+      regex = %r{/rails/active_storage/blobs(/redirect)?/(?<signature>.+--\w+)/(\w+)\.(\w+)\Z}
       path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
 
       assert_match(
