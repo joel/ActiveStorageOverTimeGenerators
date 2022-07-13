@@ -39,7 +39,7 @@ module ActiveStorageOverTime
 
     test "Rails 5.x compatibility" do
       # Rails 5.x keys the blob_id in the URL
-      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6c13b469ea9800834de3cef4976b4ef57c9d7211"
+      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
       # assert_equal(1, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
 
       assert_equal(
