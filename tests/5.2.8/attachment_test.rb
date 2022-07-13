@@ -30,7 +30,7 @@ module ActiveStorageOverTime
       # That route changes in Rails 6.x
       # get "/rails/active_storage/blobs/:signed_id/*filename" => "active_storage/blobs#show", as: :rails_service_blob
       regex = %r{/rails/active_storage/blobs/(?<signature>\w+--\w+)/(\w+)\.(\w+)\Z}
-      path_for_attachment = polymorphic_path(attachment.asset, only_path: true) # attachment.asset.service_url (need the host set!)
+      path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
 
       assert_match(
         regex,
@@ -51,13 +51,17 @@ module ActiveStorageOverTime
         ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
       )
 
+      # Public URL from the service
+      assert_nothing_raised do
+        ActiveStorage::Current.set(host: "https://www.example.com") { attachment.asset.service_url(expires_in: nil) }
+      end
+
       # That signature was generated with the correct secret key in Rails 5.x
-      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--5a1ccbebccd2e79b89c8d7dbbfd17ee1f23d209c"
+      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
 
       # We check the data get encoded the same way over and over again
       # data--digest
-      # The digest rotates every time
-      assert_equal(signature.split("--")[0], ref_signature.split("--")[0])
+      assert_equal(signature, ref_signature)
     end
 
     test "that the same message verifier always can decode the token" do
