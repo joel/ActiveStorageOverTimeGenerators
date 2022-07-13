@@ -30,7 +30,7 @@ module ActiveStorageOverTime
         assert_nothing_raised { attachment.save! }
       end
 
-      regex = %r{/rails/active_storage/blobs/redirect/(?<signature>.+--\w+)/(\w+)\.(\w+)\Z}
+      regex = %r{/rails/active_storage/blobs(/redirect)?/(?<signature>.+--\w+)/(\w+)\.(\w+)\Z}
       path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
 
       assert_match(
