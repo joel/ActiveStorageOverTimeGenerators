@@ -50,13 +50,17 @@ module ActiveStorageOverTime
         ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
       )
 
+      # Public URL from the service
+      assert_nothing_raised do
+        ActiveStorage::Current.set(host: "https://www.example.com") { attachment.asset.service_url(expires_in: nil) }
+      end
+
       # That signature was generated with the correct secret key in Rails 5.x
-      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--5a1ccbebccd2e79b89c8d7dbbfd17ee1f23d209c"
+      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
 
       # We check the data get encoded the same way over and over again
       # data--digest
-      # The digest rotates every time
-      assert_equal(signature.split("--")[0], ref_signature.split("--")[0])
+      assert_equal(signature, ref_signature)
     end
 
     test "the generate_key stay constant" do
@@ -78,8 +82,9 @@ module ActiveStorageOverTime
     end
 
     test "Rails 5.x compatibility" do
-      # Rails 5.x keys the blob_id in the URL
-      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--5a1ccbebccd2e79b89c8d7dbbfd17ee1f23d209c"
+      # Signatue from a Rails 5.x app
+      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
+
       assert_equal(1, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
     end
 
