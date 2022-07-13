@@ -75,6 +75,11 @@ module ActiveStorageOverTime
     test "that the same message verifier always can decode the token" do
       verifier = ActiveSupport::MessageVerifier.new('foo')
 
+      assert_equal(
+        verifier.generate("foo bar"),
+        "BAhJIgxmb28gYmFyBjoGRVQ=--c96da3d84a4293a81f3a30c71afe1492ec82e9d6"
+      )
+
       # Token generated with Rails 5.x
       token = "BAhJIgxmb28gYmFyBjoGRVQ=--c96da3d84a4293a81f3a30c71afe1492ec82e9d6"
 
