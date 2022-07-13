@@ -18,7 +18,7 @@ module ActiveStorageOverTime
 
       assert_nothing_raised { attachment.save! }
 
-      regex = %r{/rails/active_storage/blobs/(?<message>\w+--\w+)/(\w+)\.(\w+)\Z}
+      regex = %r{/rails/active_storage/blobs/(?<signature>\w+--\w+)/(\w+)\.(\w+)\Z}
       path_for_attachment = polymorphic_path(attachment.asset, only_path: true)
 
       assert_match(
@@ -27,13 +27,13 @@ module ActiveStorageOverTime
         "Active Storage URL not recognized"
       )
 
-      message = path_for_attachment.match(regex)[:message]
+      signature = path_for_attachment.match(regex)[:signature]
 
-      assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(message, purpose: "blob_id"))
+      assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
 
       assert_equal(
-        "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2f5c0f536abc3a6edbfb947904955b8ee2bda7b6",
-        message
+        attachment.id,
+        ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
       )
     end
   end
