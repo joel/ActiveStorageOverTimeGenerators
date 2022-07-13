@@ -5,15 +5,18 @@ module ActiveStorageOverTime
 
     include Rails.application.routes.url_helpers
 
-    test "valid" do
-
+    test "that secret_key_base is correctly set" do
+      # That is essential to ensure that the key is correctly generated
       assert_equal(
         Dummy::Application.secret_key_base,
         "your-secret"
       )
+    end
 
+    test "the consistency of the behavior" do
       attachment = Attachment.new
 
+      # In Rails 5.x the asset is create when the file is assigned, that change behavior change in Rails 6.x
       assert_changes -> { Dir[Rails.root.join("tmp/storage/**/*")].count(&File.method(:file?)) }, +1 do
         attachment.asset = Rack::Test::UploadedFile.new(
           Rails.root.join("../../test/fixtures/blue.png")
@@ -24,6 +27,8 @@ module ActiveStorageOverTime
 
       assert_nothing_raised { attachment.save! }
 
+      # That route changes in Rails 6.x
+      # get "/rails/active_storage/blobs/:signed_id/*filename" => "active_storage/blobs#show", as: :rails_service_blob
       regex = %r{/rails/active_storage/blobs/(?<signature>\w+--\w+)/(\w+)\.(\w+)\Z}
       path_for_attachment = polymorphic_path(attachment.asset, only_path: true) # attachment.asset.service_url (need the host set!)
 
@@ -37,24 +42,33 @@ module ActiveStorageOverTime
 
       assert ActiveStorage.verifier.valid_message?(signature)
 
+      # We can find the asset in the storage
       assert_equal(attachment.asset.id, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
 
+      # From the asset we can find the parent record
       assert_equal(
         attachment.id,
         ActiveStorage::Attachment.where(blob: ActiveStorage::Blob.find_signed(signature)).take.record_id
       )
 
+      # That signature was generated with the correct secret key in Rails 5.x
       ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--5a1ccbebccd2e79b89c8d7dbbfd17ee1f23d209c"
 
+      # We check the data get encoded the same way over and over again
+      # data--digest
+      # The digest rotates every time
       assert_equal(signature.split("--")[0], ref_signature.split("--")[0])
-      # assert_equal(signature, ref_signature)
+    end
 
+    test "that the same message verifier always can decode the token" do
       verifier = ActiveSupport::MessageVerifier.new('foo')
 
       token = verifier.generate("foo bar")
 
       assert_equal("foo bar", verifier.verify(token))
+    end
 
+    test "the generate_key stay constant" do
       generated_key = "\xF8bssAA?\xCCc\xB4\xD5$&>\x91;\xB1^\xBB'uH\x11 \xED\x8Fi\xF7\xEB\xF2\xC2\xB2\xA0\x94\xD9\xE7\xCD-\xBE\xDDcq,\x8C\xFC\x89\xDDS\x9C\xDFH\n\x8C\x03\x98{\xE4#\x1AR\xA0\xF1\xA4s"
 
       assert_equal(
