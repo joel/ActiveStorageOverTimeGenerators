@@ -5,6 +5,13 @@ module ActiveStorageOverTime
 
     include Rails.application.routes.url_helpers
 
+    test "use SHA256 instead of SHA1" do
+      assert_equal(
+        OpenSSL::Digest::SHA256,
+        ActiveSupport::KeyGenerator.hash_digest_class
+      )
+    end
+
     test "that secret_key_base is correctly set" do
       # That is essential to ensure that the key is correctly generated
       assert_equal(
@@ -56,21 +63,20 @@ module ActiveStorageOverTime
       end
 
       # That signature was generated with the correct secret key in Rails 5.x
-      # ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
+      ref_signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
 
-      # # We check the data get encoded the same way over and over again
-      # # data--digest
-      # assert_equal(signature, ref_signature)
+      # This signature has now changed due to the use of SHA256
+      assert_not_equal(signature, ref_signature)
     end
 
-    # test "the generate_key stay constant" do
-    #   generated_key = "\xF8bssAA?\xCCc\xB4\xD5$&>\x91;\xB1^\xBB'uH\u0011 \xED\x8Fi\xF7\xEB\xF2²\xA0\x94\xD9\xE7\xCD-\xBE\xDDcq,\x8C\xFC\x89\xDDS\x9C\xDFH\n\x8C\u0003\x98{\xE4#\u001AR\xA0\xF1\xA4s"
+    test "the generated SHA1 key changed due to the use of SHA256" do
+      generated_key = "\xF8bssAA?\xCCc\xB4\xD5$&>\x91;\xB1^\xBB'uH\u0011 \xED\x8Fi\xF7\xEB\xF2²\xA0\x94\xD9\xE7\xCD-\xBE\xDDcq,\x8C\xFC\x89\xDDS\x9C\xDFH\n\x8C\u0003\x98{\xE4#\u001AR\xA0\xF1\xA4s"
 
-    #   assert_equal(
-    #     Dummy::Application.key_generator.generate_key("ActiveStorage").force_encoding("ASCII-8BIT"),
-    #     generated_key.force_encoding("ASCII-8BIT")
-    #   )
-    # end
+      assert_not_equal(
+        Dummy::Application.key_generator.generate_key("ActiveStorage").force_encoding("ASCII-8BIT"),
+        generated_key.force_encoding("ASCII-8BIT")
+      )
+    end
 
     test "that the same message verifier always can decode the token" do
       verifier = ActiveSupport::MessageVerifier.new('foo')
@@ -86,12 +92,12 @@ module ActiveStorageOverTime
       assert_equal("foo bar", verifier.verify(token))
     end
 
-    # test "Rails 5.x compatibility" do
-    #   # Signatue from a Rails 5.x app
-    #   signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
+    test "Rails 5.x compatibility" do
+      # Signatue from a Rails 5.x app
+      signature = "eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9112b21ceae0bf2e165f26f05d070864569f7b18"
 
-    #   assert_equal(1, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
-    # end
+      assert_equal(1, ActiveStorage.verifier.verify(signature, purpose: "blob_id"))
+    end
 
   end
 end

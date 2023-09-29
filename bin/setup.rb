@@ -88,6 +88,8 @@ module RailsVersionScope
         ["cp tests/fixtures/blue.png #{PLUGIN_NAME}/test/fixtures/", APP_ROOT],
         ["./bin/dummy_setup add_asset_associated_to_attachment", APP_ROOT],
         ["./bin/dummy_setup set_secret_key_base", APP_ROOT],
+        ["mkdir -p #{PLUGIN_NAME}/config/initializers", APP_ROOT],
+        ["cp config/initializers/active_storage_key_rotator.rb #{PLUGIN_NAME}/config/initializers/", APP_ROOT],
         ["BUNDLE_GEMFILE=../gemfiles/Gemfile.#{Rails::VERSION::STRING}.gemfile bundle exec rails test", PLUGIN_ROOT],
       ]
     end
