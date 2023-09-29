@@ -19,6 +19,11 @@ jobs:
       matrix:
         include:
           -
+            name: Rails 4.x
+            ruby: 2.2.10
+            gemfile: gemfiles/Gemfile.4.2.11.gemfile
+            rails_version: 4.2.11.3
+          -
             name: Rails 5.x
             ruby: 2.7.6
             gemfile: gemfiles/Gemfile.5.2.8.gemfile
@@ -30,7 +35,7 @@ jobs:
             rails_version: 6.1.6
           -
             name: Rails 7.x
-            ruby: 2.7.6
+            ruby: 3.1.2
             gemfile: gemfiles/Gemfile.7.0.3.gemfile
             rails_version: 7.0.3
 
@@ -56,6 +61,9 @@ jobs:
       -
         name: Bundle install ${{ matrix.gemfile }}
         run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} bundle install
+      -
+        name: Bundle lock ${{ matrix.gemfile }}
+        run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} bundle lock --add-platform x86_64-linux
       -
         name: Setup Tests For Rails ${{ matrix.rails_version }}
         run: BUNDLE_GEMFILE=${{ env.BUNDLE_GEMFILE }} ./bin/setup
